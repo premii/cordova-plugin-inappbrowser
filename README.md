@@ -16,6 +16,12 @@
 #         specific language governing permissions and limitations
 #         under the License.
 -->
+# Fork to theme inappbrowser
+
+Pass hex color value:
+
+    window.open(url, '_blank', 'enableViewportScale=yes,zoom=yes', '#FF6600);
+
 
 # cordova-plugin-inappbrowser
 
