@@ -22,9 +22,9 @@ Pass hex color value:
 
     window.open(url, '_blank', 'enableViewportScale=yes,zoom=yes', '#FF6600);
 
-![Gray theme](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/gray.png?raw=true)
-![Purple](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/purple.png?raw=true)
-![Hot Red](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/hot-red.png?raw=true)
+![Gray theme](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/gray.png?raw=true =360x)
+![Purple](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/purple.png?raw=true =360x)
+![Hot Red](https://github.com/premii/cordova-plugin-inappbrowser/blob/master/screenshots/hot-red.png?raw=true =360x)
 
 
 # cordova-plugin-inappbrowser
