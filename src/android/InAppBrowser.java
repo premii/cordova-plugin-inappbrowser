@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import org.apache.cordova.inappbrowser.InAppBrowserDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.provider.Browser;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -100,7 +101,7 @@ public class InAppBrowser extends CordovaPlugin {
      *
      * @param action        The action to execute.
      * @param args          JSONArry of arguments for the plugin.
-     * @param callbackId    The callback id used when calling back into JavaScript.
+     * @param callbackContext    The callback id used when calling back into JavaScript.
      * @return              A PluginResult object with a status and message.
      */
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
@@ -113,6 +114,12 @@ public class InAppBrowser extends CordovaPlugin {
             }
             final String target = t;
             final HashMap<String, Boolean> features = parseFeature(args.optString(2));
+            String hexBackgroundColorArg = args.optString(3);
+
+            if (hexBackgroundColorArg == null || hexBackgroundColorArg.equals("") || hexBackgroundColorArg.equals(NULL)) {
+                hexBackgroundColorArg = "#666666";
+            }
+            final String hexBackgroundColor = hexBackgroundColorArg;
 
             Log.d(LOG_TAG, "target = " + target);
 
@@ -172,7 +179,7 @@ public class InAppBrowser extends CordovaPlugin {
                         // load in InAppBrowser
                         else {
                             Log.d(LOG_TAG, "loading in InAppBrowser");
-                            result = showWebPage(url, features);
+                            result = showWebPage(url, features, hexBackgroundColor);
                         }
                     }
                     // SYSTEM
@@ -183,7 +190,7 @@ public class InAppBrowser extends CordovaPlugin {
                     // BLANK - or anything else
                     else {
                         Log.d(LOG_TAG, "in blank");
-                        result = showWebPage(url, features);
+                        result = showWebPage(url, features, hexBackgroundColor);
                     }
 
                     PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
@@ -465,7 +472,7 @@ public class InAppBrowser extends CordovaPlugin {
      * @param url           The url to load.
      * @param jsonObject
      */
-    public String showWebPage(final String url, HashMap<String, Boolean> features) {
+    public String showWebPage(final String url, HashMap<String, Boolean> features, final String hexBackgroundColor) {
         // Determine if we should hide the location bar.
         showLocationBar = true;
         showZoomControls = true;
@@ -532,7 +539,7 @@ public class InAppBrowser extends CordovaPlugin {
                 // Toolbar layout
                 RelativeLayout toolbar = new RelativeLayout(cordova.getActivity());
                 //Please, no more black!
-                toolbar.setBackgroundColor(android.graphics.Color.LTGRAY);
+                toolbar.setBackgroundColor(Color.parseColor(hexBackgroundColor));  //android.graphics.Color.LTGRAY
                 toolbar.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, this.dpToPixels(44)));
                 toolbar.setPadding(this.dpToPixels(2), this.dpToPixels(2), this.dpToPixels(2), this.dpToPixels(2));
                 toolbar.setHorizontalGravity(Gravity.LEFT);
@@ -569,28 +576,6 @@ public class InAppBrowser extends CordovaPlugin {
                     }
                 });
 
-                // Forward button
-                Button forward = new Button(cordova.getActivity());
-                RelativeLayout.LayoutParams forwardLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-                forwardLayoutParams.addRule(RelativeLayout.RIGHT_OF, 2);
-                forward.setLayoutParams(forwardLayoutParams);
-                forward.setContentDescription("Forward Button");
-                forward.setId(3);
-                int fwdResId = activityRes.getIdentifier("ic_action_next_item", "drawable", cordova.getActivity().getPackageName());
-                Drawable fwdIcon = activityRes.getDrawable(fwdResId);
-                if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN)
-                {
-                    forward.setBackgroundDrawable(fwdIcon);
-                }
-                else
-                {
-                    forward.setBackground(fwdIcon);
-                }
-                forward.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        goForward();
-                    }
-                });
 
                 // Edit Text Box
                 edittext = new EditText(cordova.getActivity());
@@ -598,6 +583,9 @@ public class InAppBrowser extends CordovaPlugin {
                 textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
                 textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
                 edittext.setLayoutParams(textLayoutParams);
+                edittext.setBackgroundColor(Color.parseColor(hexBackgroundColor));
+                edittext.setTextColor(Color.parseColor("#CCFFFFFF"));
+                edittext.setTextSize(15);
                 edittext.setId(4);
                 edittext.setSingleLine(true);
                 edittext.setText(url);
@@ -620,7 +608,7 @@ public class InAppBrowser extends CordovaPlugin {
                 RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 close.setLayoutParams(closeLayoutParams);
-                forward.setContentDescription("Close Button");
+                close.setContentDescription("Close Button");
                 close.setId(5);
                 int closeResId = activityRes.getIdentifier("ic_action_remove", "drawable", cordova.getActivity().getPackageName());
                 Drawable closeIcon = activityRes.getDrawable(closeResId);
@@ -675,7 +663,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Add the back and forward buttons to our action button container layout
                 actionButtonContainer.addView(back);
-                actionButtonContainer.addView(forward);
+//                actionButtonContainer.addView(forward);
 
                 // Add the views to our toolbar
                 toolbar.addView(actionButtonContainer);
